@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://cs3k7spxfljjb"]
+
+[ext_resource type="PackedScene" uid="uid://cydbya0ua8byt" path="res://scenes/entities/basic_level/basic_level.tscn" id="1_pq8q7"]
+[ext_resource type="PackedScene" uid="uid://cq3y222kuhhgt" path="res://scenes/entities/player/PlayerCharacter.tscn" id="2_pyidc"]
+
+[node name="Root" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.999651, 0.014755, 0.0219092, -0.0260569, 0.68684, 0.726341, -0.00433099, -0.726658, 0.686985, 3.88699, 30.7203, 24.2944)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.804075, 0.594528, 0, -0.594528, -0.804075, 0, 53.5524, -53.379)
+
+[node name="basic_level" parent="." instance=ExtResource("1_pq8q7")]
+transform = Transform3D(1, 1.86265e-09, -9.31323e-10, 3.72529e-09, 1, -2.98023e-08, 1.86265e-09, 2.98023e-08, 1, 0, -5, 0)
+
+[node name="PlayerCharacter" parent="." instance=ExtResource("2_pyidc")]
+transform = Transform3D(1, 1.86265e-09, -9.31323e-10, 3.72529e-09, 1, -2.98023e-08, 1.86265e-09, 2.98023e-08, 1, 4.76837e-07, 1.90735e-06, 0)
