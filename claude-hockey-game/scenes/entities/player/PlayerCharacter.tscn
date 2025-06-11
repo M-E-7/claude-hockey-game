@@ -1,6 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://cq3y222kuhhgt"]
+[gd_scene load_steps=5 format=3 uid="uid://cq3y222kuhhgt"]
+
+[ext_resource type="Script" uid="uid://18cyn1hkabub" path="res://scenes/entities/player/player_character.gd" id="1_jv5jo"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qulos"]
+albedo_color = Color(0.0705882, 0.282353, 1, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_jv5jo"]
+material = SubResource("StandardMaterial3D_qulos")
 top_radius = 1.0
 bottom_radius = 1.0
 height = 0.5
@@ -10,6 +16,7 @@ height = 0.5
 radius = 1.0
 
 [node name="PlayerCharacter" type="CharacterBody3D"]
+script = ExtResource("1_jv5jo")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CylinderMesh_jv5jo")
