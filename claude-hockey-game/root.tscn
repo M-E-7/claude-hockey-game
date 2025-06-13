@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cydbya0ua8byt" path="res://scenes/entities/basic_level/basic_level.tscn" id="1_pq8q7"]
 [ext_resource type="PackedScene" uid="uid://cq3y222kuhhgt" path="res://scenes/entities/player/PlayerCharacter.tscn" id="2_pyidc"]
-[ext_resource type="PackedScene" uid="uid://bk8yay203w4v5" path="res://scenes/entities/puck/puck.tscn" id="3_puck"]
+[ext_resource type="PackedScene" uid="uid://dgojdbda1rngi" path="res://scenes/entities/puck/puck.tscn" id="3_puck"]
 
 [node name="Root" type="Node3D"]
 

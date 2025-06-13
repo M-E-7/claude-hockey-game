@@ -4,7 +4,8 @@ extends CharacterBody3D
 @export var acceleration: float = 12.0
 @export var max_speed: float = 15.0
 @export var friction: float = 0.15  # Ice friction (lower = more slippery)
-@export var turn_speed: float = 3.0
+@export var turn_speed: float = 8.0  # How fast the player rotates
+@export var rotation_threshold: float = 0.5  # Minimum speed needed to rotate
 
 # Puck handling parameters
 @export var shoot_force: float = 25.0
@@ -26,6 +27,7 @@ func _physics_process(delta):
 	handle_input()
 	handle_puck_actions()
 	apply_movement(delta)
+	apply_rotation(delta)
 	apply_friction(delta)
 	move_and_slide()
 
@@ -82,6 +84,18 @@ func apply_friction(delta):
 	if momentum_velocity.length() < 0.1:
 		momentum_velocity = Vector3.ZERO
 
+func apply_rotation(delta):
+	# Only rotate if moving fast enough
+	if momentum_velocity.length() > rotation_threshold:
+		# Calculate the direction we're moving in
+		var movement_direction = Vector3(momentum_velocity.x, 0, momentum_velocity.z).normalized()
+		
+		# Calculate the target rotation (looking in movement direction)
+		var target_transform = transform.looking_at(global_position + movement_direction, Vector3.UP)
+		
+		# Smoothly rotate toward the target
+		transform = transform.interpolate_with(target_transform, turn_speed * delta)
+
 # Puck handling methods
 func can_pickup_puck() -> bool:
 	return not has_puck
@@ -103,15 +117,19 @@ func shoot_puck():
 	if not has_puck or not held_puck:
 		return
 	
-	# Calculate shoot direction based on player's movement or facing direction
+	# Calculate shoot direction based on player's facing direction
 	var shoot_direction = Vector3.ZERO
 	
-	# If player is moving, shoot in movement direction
+	# Use the player's facing direction (transform.basis.z is forward in Godot, but negative)
+	shoot_direction = -transform.basis.z
+	
+	# If no clear facing direction, use movement direction
 	if momentum_velocity.length() > 0.5:
 		shoot_direction = Vector3(momentum_velocity.x, 0, momentum_velocity.z).normalized()
-	else:
-		# Default shoot forward (negative Z in Godot)
-		shoot_direction = Vector3(0, 0, -1)
+	
+	# Ensure direction is valid
+	if shoot_direction == Vector3.ZERO:
+		shoot_direction = Vector3(0, 0, -1)  # Default forward
 	
 	# Release and shoot the puck
 	held_puck.release_puck(shoot_direction, shoot_force)
