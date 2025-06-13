@@ -1,0 +1,65 @@
+[gd_scene load_steps=8 format=3 uid="uid://bk3y8spxfljjc"]
+
+[ext_resource type="Script" uid="uid://ck5y9tqxgmkjd" path="res://scenes/entities/goalpost/goalpost.gd" id="1_goalpost"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_post"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_left_post"]
+material = SubResource("StandardMaterial3D_post")
+size = Vector3(0.2, 4, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_right_post"]
+material = SubResource("StandardMaterial3D_post")
+size = Vector3(0.2, 4, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_crossbar"]
+material = SubResource("StandardMaterial3D_post")
+size = Vector3(4, 0.2, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_net"]
+material = SubResource("StandardMaterial3D_post")
+size = Vector3(4, 4, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_goal_area"]
+size = Vector3(4, 4, 2)
+
+[node name="Goalpost" type="Node3D"]
+script = ExtResource("1_goalpost")
+
+[node name="LeftPost" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LeftPost"]
+mesh = SubResource("BoxMesh_left_post")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LeftPost"]
+shape = SubResource("BoxShape3D_goal_area")
+
+[node name="RightPost" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RightPost"]
+mesh = SubResource("BoxMesh_right_post")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RightPost"]
+shape = SubResource("BoxShape3D_goal_area")
+
+[node name="Crossbar" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Crossbar"]
+mesh = SubResource("BoxMesh_crossbar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Crossbar"]
+shape = SubResource("BoxShape3D_goal_area")
+
+[node name="Net" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -1)
+mesh = SubResource("BoxMesh_net")
+
+[node name="GoalArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -0.5)
+
+[node name="GoalCollision" type="CollisionShape3D" parent="GoalArea"]
+shape = SubResource("BoxShape3D_goal_area")

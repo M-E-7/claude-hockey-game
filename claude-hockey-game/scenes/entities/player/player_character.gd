@@ -24,18 +24,19 @@ var held_puck: RigidBody3D = null
 # Shot charging
 var is_charging_shot: bool = false
 var current_charge: float = 0.0
-var power_bar: ProgressBar = null
+var power_bar_3d: MeshInstance3D = null
+var power_bar_background: MeshInstance3D = null
 
 # Pickup cooldown
-var pickup_cooldown_time: float = 0.5  # Seconds before can pickup again
+var pickup_cooldown_time: float = 1.0  # Seconds before can pickup again
 var pickup_cooldown_timer: float = 0.0
 
 func _ready():
 	# Initialize momentum
 	momentum_velocity = Vector3.ZERO
 	
-	# Create power bar UI
-	create_power_bar()
+	# Create 3D power bar
+	create_3d_power_bar()
 
 func _physics_process(delta):
 	handle_input()
@@ -44,6 +45,7 @@ func _physics_process(delta):
 	apply_rotation(delta)
 	apply_friction(delta)
 	update_pickup_cooldown(delta)
+	update_power_bar_rotation()
 	move_and_slide()
 
 func handle_input():
@@ -165,48 +167,73 @@ func shoot_puck():
 	print("Player shot the puck!")
 
 # Shot charging system
-func create_power_bar():
-	# Create a CanvasLayer for UI that follows the player
-	var canvas_layer = CanvasLayer.new()
-	canvas_layer.layer = 100
-	get_tree().current_scene.add_child(canvas_layer)
+func create_3d_power_bar():
+	# Create background bar
+	power_bar_background = MeshInstance3D.new()
+	var bg_mesh = BoxMesh.new()
+	bg_mesh.size = Vector3(2.0, 0.2, 0.1)  # Width, Height, Depth
+	power_bar_background.mesh = bg_mesh
 	
-	# Create power bar container
-	var power_container = Control.new()
-	power_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	power_container.size = Vector2(100, 20)
-	canvas_layer.add_child(power_container)
+	# Background material (dark)
+	var bg_material = StandardMaterial3D.new()
+	bg_material.albedo_color = Color(0.3, 0.3, 0.3, 1.0)
+	bg_material.flags_unshaded = true
+	bg_material.no_depth_test = true
+	bg_material.flags_transparent = false
+	power_bar_background.material_override = bg_material
 	
-	# Create the actual progress bar
-	power_bar = ProgressBar.new()
-	power_bar.size = Vector2(100, 10)
-	power_bar.min_value = 0.0
-	power_bar.max_value = max_shoot_force
-	power_bar.value = 0.0
-	power_bar.visible = false
+	# Position below player
+	power_bar_background.position = Vector3(0, -0.8, 0)
+	add_child(power_bar_background)
 	
-	# Style the power bar
-	var style_bg = StyleBoxFlat.new()
-	style_bg.bg_color = Color(0.2, 0.2, 0.2, 0.8)
-	style_bg.border_width_left = 1
-	style_bg.border_width_right = 1
-	style_bg.border_width_top = 1
-	style_bg.border_width_bottom = 1
-	style_bg.border_color = Color.WHITE
+	# Create foreground bar (the actual power indicator)
+	power_bar_3d = MeshInstance3D.new()
+	var fg_mesh = BoxMesh.new()
+	fg_mesh.size = Vector3(0.1, 0.25, 0.12)  # Start very thin, slightly taller than background
+	power_bar_3d.mesh = fg_mesh
 	
-	var style_fg = StyleBoxFlat.new()
-	style_fg.bg_color = Color(1.0, 0.3, 0.3, 0.9)  # Red color for power
+	# Foreground material (starts red)
+	var fg_material = StandardMaterial3D.new()
+	fg_material.albedo_color = Color(1.0, 0.0, 0.0, 1.0)  # Red
+	fg_material.flags_unshaded = true
+	fg_material.no_depth_test = true
+	fg_material.flags_transparent = false
+	power_bar_3d.material_override = fg_material
 	
-	power_bar.add_theme_stylebox_override("background", style_bg)
-	power_bar.add_theme_stylebox_override("fill", style_fg)
+	# Position aligned with background, slightly forward and higher
+	power_bar_3d.position = Vector3(-0.95, -0.8, 0.01)  # Start at left edge
+	add_child(power_bar_3d)
 	
-	power_container.add_child(power_bar)
+	# Start both as invisible
+	power_bar_background.visible = false
+	power_bar_3d.visible = false
+	
+	print("Created 3D power bar")
 
 func start_charging_shot():
 	is_charging_shot = true
 	current_charge = 0.0
-	if power_bar:
-		power_bar.visible = true
+	print("Starting charge shot - making bars visible")
+	
+	if power_bar_3d and power_bar_background:
+		power_bar_3d.visible = true
+		power_bar_background.visible = true
+		print("Bars should now be visible")
+		
+		# Reset bar to minimum size and red color
+		var fg_mesh = power_bar_3d.mesh as BoxMesh
+		if fg_mesh:
+			fg_mesh.size = Vector3(0.1, 0.25, 0.12)
+			power_bar_3d.position.x = -0.95
+			print("Reset bar size and position")
+		
+		var material = power_bar_3d.material_override as StandardMaterial3D
+		if material:
+			material.albedo_color = Color(1.0, 0.0, 0.0, 1.0)
+			print("Set bar color to red")
+	else:
+		print("ERROR: Power bars not found!")
+	
 	print("Started charging shot!")
 
 func charge_shot():
@@ -217,18 +244,35 @@ func charge_shot():
 	current_charge += charge_rate * get_physics_process_delta_time()
 	current_charge = min(current_charge, max_shoot_force)
 	
-	# Update power bar
-	if power_bar:
-		power_bar.value = current_charge
-		# Change color based on charge level
+	# Update 3D power bar
+	if power_bar_3d:
 		var charge_ratio = current_charge / max_shoot_force
-		var color = Color.RED.lerp(Color.YELLOW, charge_ratio * 0.5)
-		if charge_ratio > 0.8:
-			color = Color.YELLOW.lerp(Color.GREEN, (charge_ratio - 0.8) / 0.2)
 		
-		var style_fg = power_bar.get_theme_stylebox("fill")
-		if style_fg is StyleBoxFlat:
-			style_fg.bg_color = color
+		# Update bar width (scale from 0.1 to 2.0)
+		var bar_width = 0.1 + (charge_ratio * 1.9)
+		var fg_mesh = power_bar_3d.mesh as BoxMesh
+		if fg_mesh:
+			fg_mesh.size.x = bar_width
+		
+		# Update bar position (keep left edge aligned)
+		power_bar_3d.position.x = -0.95 + (bar_width - 0.1) / 2.0
+		
+		# Update color (red to yellow to green)
+		var color = Color.RED
+		if charge_ratio <= 0.5:
+			# Red to Yellow (0.0 to 0.5)
+			color = Color.RED.lerp(Color.YELLOW, charge_ratio * 2.0)
+		else:
+			# Yellow to Green (0.5 to 1.0)
+			color = Color.YELLOW.lerp(Color.GREEN, (charge_ratio - 0.5) * 2.0)
+		
+		var material = power_bar_3d.material_override as StandardMaterial3D
+		if material:
+			material.albedo_color = color
+		
+		# Debug output every so often
+		if int(current_charge * 10) % 5 == 0:
+			print("Charge: ", current_charge, " Ratio: ", charge_ratio, " Width: ", bar_width)
 
 func shoot_charged_puck():
 	if not has_puck or not held_puck or not is_charging_shot:
@@ -260,5 +304,15 @@ func update_pickup_cooldown(delta):
 func stop_charging_shot():
 	is_charging_shot = false
 	current_charge = 0.0
-	if power_bar:
-		power_bar.visible = false
+	if power_bar_3d and power_bar_background:
+		power_bar_3d.visible = false
+		power_bar_background.visible = false
+
+func update_power_bar_rotation():
+	if power_bar_background and power_bar_3d:
+		var camera = get_viewport().get_camera_3d()
+		print(camera)
+		if camera:
+			var look_direction = (camera.global_position - global_position).normalized()
+			power_bar_background.look_at(global_position + look_direction, Vector3.UP)
+			power_bar_3d.look_at(global_position + look_direction, Vector3.UP)

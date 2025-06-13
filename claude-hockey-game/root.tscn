@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://cs3k7spxfljjb"]
+[gd_scene load_steps=6 format=3 uid="uid://cs3k7spxfljjb"]
 
 [ext_resource type="PackedScene" uid="uid://cydbya0ua8byt" path="res://scenes/entities/basic_level/basic_level.tscn" id="1_pq8q7"]
 [ext_resource type="PackedScene" uid="uid://cq3y222kuhhgt" path="res://scenes/entities/player/PlayerCharacter.tscn" id="2_pyidc"]
-[ext_resource type="PackedScene" uid="uid://dgojdbda1rngi" path="res://scenes/entities/puck/puck.tscn" id="3_puck"]
+[ext_resource type="PackedScene" uid="uid://dgojdbda1rngi" path="res://scenes/entities/puck/Puck.tscn" id="3_puck"]
+[ext_resource type="PackedScene" uid="uid://bk3y8spxfljjc" path="res://scenes/entities/goalpost/goalpost.tscn" id="4_goalpost"]
+[ext_resource type="Script" uid="uid://djn4o07ekuhee" path="res://scripts/game_manager.gd" id="5_game_manager"]
 
 [node name="Root" type="Node3D"]
 
@@ -20,3 +22,14 @@ transform = Transform3D(1, 1.86265e-09, -9.31323e-10, 3.72529e-09, 1, -2.98023e-
 
 [node name="Puck" parent="." instance=ExtResource("3_puck")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.5, 5)
+
+[node name="GoalpostA" parent="." instance=ExtResource("4_goalpost")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, -14)
+script = null
+
+[node name="GoalpostB" parent="." instance=ExtResource("4_goalpost")]
+transform = Transform3D(0.207519, 0, 0.978231, 0, 1, 0, -0.978231, 0, 0.207519, -24.6874, 0, -0.643003)
+script = null
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("5_game_manager")
