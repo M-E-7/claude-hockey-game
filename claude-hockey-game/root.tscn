@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cs3k7spxfljjb"]
+[gd_scene load_steps=4 format=3 uid="uid://cs3k7spxfljjb"]
 
 [ext_resource type="PackedScene" uid="uid://cydbya0ua8byt" path="res://scenes/entities/basic_level/basic_level.tscn" id="1_pq8q7"]
 [ext_resource type="PackedScene" uid="uid://cq3y222kuhhgt" path="res://scenes/entities/player/PlayerCharacter.tscn" id="2_pyidc"]
+[ext_resource type="PackedScene" uid="uid://bk8yay203w4v5" path="res://scenes/entities/puck/puck.tscn" id="3_puck"]
 
 [node name="Root" type="Node3D"]
 
@@ -16,3 +17,6 @@ transform = Transform3D(1, 1.86265e-09, -9.31323e-10, 3.72529e-09, 1, -2.98023e-
 
 [node name="PlayerCharacter" parent="." instance=ExtResource("2_pyidc")]
 transform = Transform3D(1, 1.86265e-09, -9.31323e-10, 3.72529e-09, 1, -2.98023e-08, 1.86265e-09, 2.98023e-08, 1, 4.76837e-07, 1.90735e-06, 0)
+
+[node name="Puck" parent="." instance=ExtResource("3_puck")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.5, 5)
