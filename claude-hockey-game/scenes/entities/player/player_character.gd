@@ -47,7 +47,7 @@ func handle_input():
 
 func handle_puck_actions():
 	# Shoot puck with spacebar
-	if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_SPACE):
+	if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("ui_select") or Input.is_key_pressed(KEY_SPACE):
 		if has_puck and held_puck:
 			shoot_puck()
 

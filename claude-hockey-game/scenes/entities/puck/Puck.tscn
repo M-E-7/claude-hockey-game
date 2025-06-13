@@ -28,4 +28,5 @@ shape = SubResource("CylinderShape3D_puck")
 [node name="PickupArea" type="Area3D" parent="."]
 
 [node name="PickupCollision" type="CollisionShape3D" parent="PickupArea"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 shape = SubResource("CylinderShape3D_puck")

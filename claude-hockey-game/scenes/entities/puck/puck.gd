@@ -10,6 +10,7 @@ var holder: CharacterBody3D = null
 var pickup_area: Area3D
 
 func _ready():
+	print("Puck ready!")
 	# Set up the pickup area
 	pickup_area = $PickupArea
 	pickup_area.body_entered.connect(_on_pickup_area_entered)
@@ -20,9 +21,8 @@ func _ready():
 	linear_damp = 0.1
 	angular_damp = 0.5
 	
-	# Freeze Y rotation to keep puck flat
-	lock_rotation = true
-	axis_lock_angular_y = true
+	# Don't freeze rotation - let's see if this helps
+	freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 
 func _physics_process(delta):
 	if not is_held:
@@ -51,15 +51,28 @@ func check_for_pickup():
 	# Get all bodies in pickup range
 	var bodies = pickup_area.get_overlapping_bodies()
 	
+	if bodies.size() > 0:
+		print("Bodies detected: ", bodies.size())
+		
 	for body in bodies:
-		if body.has_method("pickup_puck") and body.can_pickup_puck():
-			pickup_by_player(body)
-			break
+		print("Checking body: ", body.name)
+		if body.has_method("can_pickup_puck"):
+			print("Body has can_pickup_puck method")
+			if body.can_pickup_puck():
+				print("Body can pickup puck - attempting pickup")
+				pickup_by_player(body)
+				break
+			else:
+				print("Body cannot pickup puck")
+		else:
+			print("Body does not have can_pickup_puck method")
 
 func pickup_by_player(player: CharacterBody3D):
 	if is_held:
+		print("Puck already held!")
 		return
 	
+	print("Picking up puck with player: ", player.name)
 	is_held = true
 	holder = player
 	
@@ -73,6 +86,7 @@ func release_puck(shoot_direction: Vector3 = Vector3.ZERO, shoot_force: float = 
 	if not is_held:
 		return
 	
+	print("Releasing puck")
 	is_held = false
 	freeze = false
 	
@@ -90,6 +104,7 @@ func release_puck(shoot_direction: Vector3 = Vector3.ZERO, shoot_force: float = 
 		
 		# Apply the force
 		linear_velocity = shoot_direction * shoot_force
+		print("Shot puck with force: ", shoot_force, " in direction: ", shoot_direction)
 
 func follow_holder():
 	if holder == null:
@@ -98,14 +113,12 @@ func follow_holder():
 	
 	# Position the puck in front of the player
 	var hold_offset = Vector3(0, 0.5, -1.5)  # In front and slightly up
-	var target_position = holder.global_position + holder.transform.basis * hold_offset
+	var target_position = holder.global_position + hold_offset
 	
 	global_position = target_position
 
 func _on_pickup_area_entered(body):
-	# This is handled in check_for_pickup() for more control
-	pass
+	print("Pickup area entered by: ", body.name)
 
 func _on_pickup_area_exited(body):
-	# Optional: Handle when player moves away from puck
-	pass
+	print("Pickup area exited by: ", body.name)
