@@ -11,5 +11,6 @@ config_version=5
 [application]
 
 config/name="claude-hockey-game"
+run/main_scene="uid://cs3k7spxfljjb"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
