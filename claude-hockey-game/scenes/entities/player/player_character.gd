@@ -2,8 +2,10 @@ extends CharacterBody3D
 
 # Movement parameters
 @export var acceleration: float = 12.0
-@export var max_speed: float = 8.0
+# @export var max_speed: float = 8.0
+@export var max_speed: float = 15.0
 @export var friction: float = 0.15  # Ice friction (lower = more slippery)
+# @export var friction: float = 15
 @export var turn_speed: float = 3.0
 
 # Physics
